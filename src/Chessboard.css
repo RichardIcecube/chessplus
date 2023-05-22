@@ -17,20 +17,26 @@
 }
 
 body{
-    background-color:black;
+    background-image: url('background.jpg');
+    background-repeat: repeat;
+    background-size: 30%;
 }
 
 .game-mode{
     position: absolute;
     top: 0px;
-    color: white;
+    color: black;
+    background-color: white;
+    border: 3px solid black;
 }
 
 .turn-indicator{
     position:absolute;
-    color: white;
+    color: black;
     top: 0px;
     right: 40px;
+    background-color:white;
+    border: 3px solid black;
 }
 
 #zombie{

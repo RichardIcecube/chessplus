@@ -1,14 +1,17 @@
 .game-over{
-    background-color:black;
-    color:white;
     text-align: center;
     vertical-align: center;
+    width: 500px;
+    padding-bottom: 30px;
+    margin: 0 auto;
 }
 .checkmate{
-    color: white;
+    color: black;
     font-size: 80px;
     margin-bottom: 30px;
     padding: 20px;
+    background-color:white;
+    border: 5px black solid;
 }
 button {
     background-color:white;

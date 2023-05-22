@@ -1,20 +1,24 @@
 .title-screen {
-  background-color:black;
-  color:white;
+  color:black;
   text-align: center;
   vertical-align: center;
+  width: 500px;
+  padding-bottom: 30px;
+  margin: 0 auto;
 }
 
 #title {
   font-size: 80px;
   margin-bottom: 30px;
   padding: 20px;
+  background-color:white;
+  border: 5px black solid;
 }
   
 button {
   background-color:white;
   color: black;
-  border: none;
+  border: 3px black solid;
   padding: 10px 20px;
   margin: 5px;
   font-size: 16px;
