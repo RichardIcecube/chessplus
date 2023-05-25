@@ -10,18 +10,16 @@ function GameOver(){
     }
 
     return(
-        <body class="gameover-background">
-            <div>
-                {titleScreen ? 
-                (<TitleScreen />) : 
-                (
-                <div class="game-over">
-                    <h1 class="checkmate">Checkmate!</h1>
-                    <button onClick={() => returnToTitle()}>Return to Title</button>
-                </div>
-                )}
+        <div>
+            {titleScreen ? 
+            (<TitleScreen />) : 
+            (
+            <div class="game-over">
+                <h1 class="checkmate">Checkmate!</h1>
+                <button onClick={() => returnToTitle()}>Return to Title</button>
             </div>
-        </body>
+            )}
+        </div>
     );
 }
 

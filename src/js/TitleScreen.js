@@ -24,9 +24,7 @@ export default function TitleScreen() {
   }
 
   return (
-    <html>
-      <head></head>
-      <body class="title-background">
+    <div>
       {selectedMode ? (
         selectedMode
       ) : (
@@ -37,8 +35,6 @@ export default function TitleScreen() {
           <button onClick={() => handleModeSelect(3)}>EX Chess</button>
         </div>
       )}
-    </body>
-    </html>
-    
+    </div>
   );
 }

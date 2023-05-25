@@ -16,11 +16,6 @@
     }
 }
 
-body.chessboard-background{
-    background-color: tan;
-    background-image: none;
-}
-
 .game-mode{
     position: absolute;
     top: 0px;

@@ -52,7 +52,7 @@ function ZombieChess() {
   }
 
   return (
-    <body class="chessboard-background">
+    <div>
       {game.isGameOver() ? 
       (<GameOver/>) :
       (
@@ -61,7 +61,7 @@ function ZombieChess() {
           <h1 class="turn-indicator">{game.turn() === 'b' ? "Black to Move" : "White to Move"}</h1>
         <Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} />
       </div>)}
-    </body>
+    </div>
   );
 }
 
