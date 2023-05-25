@@ -61,6 +61,7 @@
 .meter-stack{
     font-size: 25px;
     color:black;
+    z-index: 2;
 }
 
 #p1-meter{
@@ -75,11 +76,13 @@
 }
 
 #p1-built-meter{
+    width: 230px;
     position: absolute;
     bottom: 12px;
     left: 12px;
 }
 #p2-built-meter{
+    width: 150px;
     position: absolute;
     bottom: 12px;
     right: 12px;
