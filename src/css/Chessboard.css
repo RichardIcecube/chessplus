@@ -1,0 +1,57 @@
+@media (max-width: 600px){
+    .gameboard{
+        max-width: 100%;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1200px){
+    .gameboard{
+        max-width: 65%;
+    }
+}
+
+@media (min-width: 1201px){
+    .gameboard{
+        max-width: 52%;
+    }
+}
+
+body.chessboard-background{
+    background-color: tan;
+    background-image: none;
+}
+
+.game-mode{
+    position: absolute;
+    top: 0px;
+    color: black;
+    background-color: white;
+    border: 3px solid black;
+}
+
+.turn-indicator{
+    position:absolute;
+    color: black;
+    top: 0px;
+    right: 40px;
+    background-color:white;
+    border: 3px solid black;
+}
+
+#zombie{
+    left: 45px;
+}
+
+#base{
+    left: 110px;
+}
+
+.gameboard{
+    justify-content: center;
+    margin: 0 auto;
+}
+
+#chessboard{
+    position: relative;
+    margin: 0;
+}
