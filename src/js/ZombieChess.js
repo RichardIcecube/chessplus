@@ -37,14 +37,37 @@ function ZombieChess() {
     return gameCopy.move(move);
   }
 
+  function isCastle(from, to){
+    if(from !== 'e1' || from !== 'e8') return 0;
+    if(from === 'e1'){
+      if(to === 'g1') return 1; //kingside castle
+      if(to === 'c1') return 2; //queenside castle
+    }
+    else{
+      if(to === 'g8') return 1; //kingside castle
+      if(to === 'c8') return 2; //queenside castle
+    }
+    return 0;
+  }
+
   function zombieTake(move, gameCopy){
     const sourcePiece = gameCopy.get(move.from);
     const targetPiece = gameCopy.get(move.to);
 
     if(sourcePiece && targetPiece && sourcePiece.color === targetPiece.color){
+        if(sourcePiece.type.charAt(0) === 'k' && (isCastle(move.from, move.to) === 1 || isCastle(move.from, move.to) === 2)){
+          let castlingRights = gameCopy.getCastingRights(sourcePiece.color);//format is { 'k': true, 'q': false }
+          if(isCastle(move.from, move.to) === 1){ //kingside castle
+            //check for castling rights
+            //gameCopy.remove()
+          }
+          else{ //queenside castle
+
+          }
+        }
         if(sourcePiece.type.charAt(0) !== 'p'){
-            gameCopy.remove(move.to);
-            return gameCopy.move(move);
+          gameCopy.remove(move.to);
+          return gameCopy.move(move);
         }
         return pawnTake(sourcePiece, move, gameCopy)
     }
