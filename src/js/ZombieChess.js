@@ -54,17 +54,43 @@ function ZombieChess() {
     const sourcePiece = gameCopy.get(move.from);
     const targetPiece = gameCopy.get(move.to);
 
-    if(sourcePiece && targetPiece && sourcePiece.color === targetPiece.color){
-        if(sourcePiece.type.charAt(0) === 'k' && (isCastle(move.from, move.to) === 1 || isCastle(move.from, move.to) === 2)){
-          let castlingRights = gameCopy.getCastingRights(sourcePiece.color);//format is { 'k': true, 'q': false }
-          if(isCastle(move.from, move.to) === 1){ //kingside castle
-            //check for castling rights
-            //gameCopy.remove()
+    if(sourcePiece.type.charAt(0) === 'k' && (isCastle(move.from, move.to) === 1 || isCastle(move.from, move.to) === 2)){
+      let castlingRights = gameCopy.getCastingRights(sourcePiece.color);//format is { 'k': true, 'q': false }
+      if(isCastle(move.from, move.to) === 1){ //kingside castle
+        //check for castling rights
+        if(castlingRights['k'] === true){
+          if(gameCopy.turn() === 'w'){
+            //NOTE MAKE SURE THE PIECES YOU REMOVE ARE YOUR OWN
+            gameCopy.remove('f1');
+            gameCopy.remove('g1');
+            return gameCopy.move(move);
           }
-          else{ //queenside castle
-
+          else{
+            gameCopy.remove('b1');
+            gameCopy.remove('c1');
+            gameCopy.remove('d1');
+            return  gameCopy.move(move);
           }
         }
+      }
+      else{ //queenside castle
+        if(castlingRights['q'] === true) {
+          if(gameCopy.turn() === 'w'){
+            gameCopy.remove('f8');
+            gameCopy.remove('g8');
+            return gameCopy.move(move);
+          }
+          else{
+            gameCopy.remove('b8');
+            gameCopy.remove('c8');
+            gameCopy.remove('d8');
+            return gameCopy.move(move);
+          }
+        }
+      }
+    }
+
+    if(sourcePiece && targetPiece && sourcePiece.color === targetPiece.color){
         if(sourcePiece.type.charAt(0) !== 'p'){
           gameCopy.remove(move.to);
           return gameCopy.move(move);
