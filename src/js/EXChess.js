@@ -20,7 +20,7 @@ function EXChess() {
 
   function makeAMove(move) {
     const gameCopy = new Chess(game.fen());
-    const result = buildMeter(game, gameCopy);
+    const result = buildMeter(move, gameCopy);
     
     setGame(gameCopy);
     return result; 
