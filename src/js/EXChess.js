@@ -14,12 +14,12 @@ function EXChess() {
   var curPiece;
 
   const [game, setGame] = useState(new Chess());
-  const PAWN_METER_GAIN = 5;
-  const KNIGHT_METER_GAIN = 15;
-  const BISHOP_METER_GAIN = 15;
-  const ROOK_METER_GAIN = 20;
-  const QUEEN_METER_GAIN = 25;
-  const KING_METER_GAIN = 25;
+  const PAWN_METER_GAIN = 30;
+  const KNIGHT_METER_GAIN = 60;
+  const BISHOP_METER_GAIN = 60;
+  const ROOK_METER_GAIN = 80;
+  const QUEEN_METER_GAIN = 110;
+  const KING_METER_GAIN = 110;
 
   const MAX_METER = 280;
   const METER_STACK = 1;
