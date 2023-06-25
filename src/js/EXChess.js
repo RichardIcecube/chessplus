@@ -38,12 +38,19 @@ function EXChess() {
     const gameCopy = new Chess(game.fen());
     const result = buildMeter(move, gameCopy);   
     setGame(gameCopy);
+    if(gameCopy.isGameOver()){
+      p1meter = 0;
+      p2meter = 0;
+      p1stack = 0;
+      p2stack = 0;
+    }
     return result; 
   }
 
   function buildMeter(move, gameCopy){
     var builtMeter = 0;
     const sourcePiece = gameCopy.get(move.from);
+    var output = gameCopy.move(move);
 
     if(sourcePiece){
       curPiece = sourcePiece.type.charAt(0);
@@ -70,10 +77,10 @@ function EXChess() {
             break;
       }
 
-      if(game.turn() === 'b'){
+      if(game.turn() === 'b' && output !== null){
         p2meter += builtMeter;
       }
-      else{
+      else if(game.turn() === 'w' && output !== null){
         p1meter += builtMeter;
       }
 
@@ -88,13 +95,14 @@ function EXChess() {
       }
 
     }
-    return gameCopy.move(move);
+    return output;
   }
   
   return (
     <div>
       {game.isGameOver() ? 
-      (<GameOver/>) :
+      (<GameOver/>
+      ) :
       (
       <div class="gameboard">
             <h1 class="game-mode" id="ex">EX Chess</h1>
