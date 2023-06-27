@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Chess } from "chess.js";
+import { Chess, WHITE } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import GameOver from "./GameOver.js";
 import "../css/Chessboard.css";
@@ -38,14 +38,14 @@ function ZombieChess() {
   }
 
   function isCastle(from, to){
-    if(from !== 'e1' || from !== 'e8') return 0;
+    if(from !== 'e1' && from !== 'e8') return 0;
     if(from === 'e1'){
-      if(to === 'g1') return 1; //kingside castle
-      if(to === 'c1') return 2; //queenside castle
+      if(to === 'g1') return 1; //kingside white
+      if(to === 'c1') return 2; //queenside white
     }
     else{
-      if(to === 'g8') return 1; //kingside castle
-      if(to === 'c8') return 2; //queenside castle
+      if(to === 'g8') return 3; //kingside black
+      if(to === 'c8') return 4; //queenside black
     }
     return 0;
   }
@@ -53,42 +53,53 @@ function ZombieChess() {
   function zombieTake(move, gameCopy){
     const sourcePiece = gameCopy.get(move.from);
     const targetPiece = gameCopy.get(move.to);
-      /*
-      if(sourcePiece.type.charAt(0) === 'k' && (isCastle(move.from, move.to) === 1 || isCastle(move.from, move.to) === 2)){
-        let castlingRights = gameCopy.getCastingRights(sourcePiece.color);//format is { 'k': true, 'q': false }
-        if(isCastle(move.from, move.to) === 1){ //kingside castle
-          //check for castling rights
-          if(castlingRights['k'] === true){
-            if(gameCopy.turn() === 'w'){
-              //NOTE MAKE SURE THE PIECES YOU REMOVE ARE YOUR OWN
+      let castle = isCastle(move.from, move.to);
+      if(sourcePiece.type.charAt(0) === 'k' && castle !== 0){
+        switch(castle){
+          case 1: //kingside white
+            let f1 = gameCopy.get('f1');
+            let g1 = gameCopy.get('g1');
+            if((f1.color === sourcePiece.color || !f1) && (g1.color === sourcePiece.color || !g1)){
               gameCopy.remove('f1');
               gameCopy.remove('g1');
               return gameCopy.move(move);
             }
-            else{
+            break;
+          case 2: //queenside white
+            let b1 = gameCopy.get('b1');
+            let c1 = gameCopy.get('c1');
+            let d1 = gameCopy.get('d1');
+            if((b1.color === sourcePiece.color || !b1) && (c1.color === sourcePiece.color || !c1) && (d1.color === sourcePiece.color || !d1)){
               gameCopy.remove('b1');
               gameCopy.remove('c1');
               gameCopy.remove('d1');
-              return  gameCopy.move(move);
+              return gameCopy.move(move);
             }
-          }
-        }
-        else{ //queenside castle
-          if(castlingRights['q'] === true) {
-            if(gameCopy.turn() === 'w'){
+            break;
+          case 3: //kingside black
+            let f8 = gameCopy.get('f8');
+            let g8 = gameCopy.get('g8');
+            if((f8.color === sourcePiece.color || !f8) && (g8.color === sourcePiece.color || !g8)){
               gameCopy.remove('f8');
               gameCopy.remove('g8');
               return gameCopy.move(move);
             }
-            else{
+            break;
+          case 4: //queenside black
+            let b8 = gameCopy.get('b8');
+            let c8 = gameCopy.get('c8');
+            let d8 = gameCopy.get('d8');
+            if((b8.color === sourcePiece.color || !b8) && (c8.color === sourcePiece.color || !c8) && (d8.color === sourcePiece.color || !d8)){
               gameCopy.remove('b8');
               gameCopy.remove('c8');
               gameCopy.remove('d8');
               return gameCopy.move(move);
             }
-          }
+            break;
+          default:
+            break;
         }
-      }*/
+      }
 
     if(sourcePiece && targetPiece && sourcePiece.color === targetPiece.color){
         if(sourcePiece.type.charAt(0) !== 'p'){
