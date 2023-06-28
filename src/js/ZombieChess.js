@@ -6,7 +6,7 @@ import "../css/Chessboard.css";
 
 function ZombieChess() {
   const [game, setGame] = useState(new Chess());
-
+  
   function onDrop(sourceSquare, targetSquare) {
     const move = makeAMove({
       from: sourceSquare,
@@ -119,7 +119,9 @@ function ZombieChess() {
       <div class="gameboard">
           <h1 class="game-mode" id="zombie">Zombie Chess</h1>
           <h1 class="turn-indicator">{game.turn() === 'b' ? "Black to Move" : "White to Move"}</h1>
-        <Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} />
+        <Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} 
+        customDarkSquareStyle={{ backgroundColor: "#779952" }}
+        customLightSquareStyle={{ backgroundColor: "#edeed1" }} />
       </div>)}
     </div>
   );
