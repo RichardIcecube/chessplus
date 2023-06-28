@@ -6,7 +6,7 @@ import "../css/Chessboard.css";
 
 function BaseChess() {
   const [game, setGame] = useState(new Chess());
-
+  const [boardO, setBoardO] = useState("white");
   function onDrop(sourceSquare, targetSquare) {
     const move = makeAMove({
       from: sourceSquare,
@@ -23,6 +23,11 @@ function BaseChess() {
     setGame(gameCopy);
     return result; 
   }
+
+  function flipBoard(){
+    if(boardO === "white") setBoardO("black");
+    else setBoardO("white");
+  }
   
   return (
     <div>
@@ -32,7 +37,11 @@ function BaseChess() {
       <div class="gameboard">
           <h1 class="game-mode" id="base">Chess</h1>
           <h1 class="turn-indicator">{game.turn() === 'b' ? "Black to Move" : "White to Move"}</h1>
-        <Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} />
+          {boardO === "white" ?
+            (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="white"/>) :
+            (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="black"/>)
+          }
+          <button id="flipbutton" onClick={flipBoard}>Flip Board</button>
       </div>)}
     </div>
   );

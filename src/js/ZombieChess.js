@@ -6,7 +6,7 @@ import "../css/Chessboard.css";
 
 function ZombieChess() {
   const [game, setGame] = useState(new Chess());
-  
+  const [boardO, setBoardO] = useState("white");
   function onDrop(sourceSquare, targetSquare) {
     const move = makeAMove({
       from: sourceSquare,
@@ -111,6 +111,11 @@ function ZombieChess() {
     return gameCopy.move(move);
   }
 
+  function flipBoard(){
+    if(boardO === "white") setBoardO("black");
+    else setBoardO("white");
+  }
+
   return (
     <div>
       {game.isGameOver() ? 
@@ -119,9 +124,13 @@ function ZombieChess() {
       <div class="gameboard">
           <h1 class="game-mode" id="zombie">Zombie Chess</h1>
           <h1 class="turn-indicator">{game.turn() === 'b' ? "Black to Move" : "White to Move"}</h1>
-        <Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} 
-        customDarkSquareStyle={{ backgroundColor: "#779952" }}
-        customLightSquareStyle={{ backgroundColor: "#edeed1" }} />
+          {boardO === "white" ?
+            (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="white" customDarkSquareStyle={{ backgroundColor: "#779952" }}
+            customLightSquareStyle={{ backgroundColor: "#edeed1" }}/> ) :
+            (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="black" customDarkSquareStyle={{ backgroundColor: "#779952" }}
+            customLightSquareStyle={{ backgroundColor: "#edeed1" }}/>)
+          }
+        <button id="flipbutton" onClick={flipBoard}>Flip Board</button>
       </div>)}
     </div>
   );

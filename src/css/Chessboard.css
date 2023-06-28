@@ -50,3 +50,9 @@
     position: relative;
     margin: 0;
 }
+
+#flipbutton{
+    position:absolute;
+    right: 90px;
+    top: 100px;
+}
