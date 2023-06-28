@@ -14,6 +14,8 @@ function EXChess() {
   var curPiece;
 
   const [game, setGame] = useState(new Chess());
+  const [boardO, setBoardO] = useState("white");
+  
   const PAWN_METER_GAIN = 30;
   const KNIGHT_METER_GAIN = 60;
   const BISHOP_METER_GAIN = 60;
@@ -98,6 +100,11 @@ function EXChess() {
     return output;
   }
   
+  function flipBoard(){
+    if(boardO === "white") setBoardO("black");
+    else setBoardO("white");
+  }
+
   return (
     <div>
       {game.isGameOver() ? 
@@ -107,8 +114,12 @@ function EXChess() {
       <div class="gameboard">
             <h1 class="game-mode" id="ex">EX Chess</h1>
             <h1 class="turn-indicator">{game.turn() === 'b' ? "Black to Move" : "White to Move"}</h1>
-            <Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} />
+            {boardO === "white" ?
+              (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="white"/>) :
+              (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="black"/>)
+            }
             {Meter(p1meter, p2meter, p1stack, p2stack)}
+            <button id="flipbutton" onClick={flipBoard}>Flip Board</button>
       </div>)}
     </div>
   );
