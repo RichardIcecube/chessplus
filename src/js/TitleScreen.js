@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import BaseChess from "./BaseChess.js";
 import ZombieChess from "./ZombieChess.js";
+import EXChess from "./EXChess.js";
 import "../css/TitleScreen.css";
 
 export default function TitleScreen() {
@@ -13,7 +14,7 @@ export default function TitleScreen() {
       case 2:
         return <ZombieChess />;
       case 3:
-        return null;
+        return <EXChess />;
       default:
         return null;
     }

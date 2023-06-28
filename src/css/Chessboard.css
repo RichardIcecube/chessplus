@@ -41,6 +41,10 @@
     left: 110px;
 }
 
+#ex{
+    left: 85px;
+}
+
 .gameboard{
     justify-content: center;
     margin: 0 auto;
