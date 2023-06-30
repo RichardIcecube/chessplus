@@ -60,3 +60,9 @@
     right: 90px;
     top: 100px;
 }
+
+#toggleEX{
+    position: absolute;
+    right: 85px;
+    top: 170px;
+}

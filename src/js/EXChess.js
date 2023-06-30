@@ -15,7 +15,8 @@ function EXChess() {
 
   const [game, setGame] = useState(new Chess());
   const [boardO, setBoardO] = useState("white");
-  
+  const [exToggle, setToggle] = useState(false);
+
   const PAWN_METER_GAIN = 30;
   const KNIGHT_METER_GAIN = 60;
   const BISHOP_METER_GAIN = 60;
@@ -27,11 +28,18 @@ function EXChess() {
   const METER_STACK = 1;
 
   function onDrop(sourceSquare, targetSquare) {
-    const move = makeAMove({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: "q",
-    });
+    var move 
+    if(exToggle === false) {
+      move = makeAMove({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: "q",
+      });
+    }
+    else{
+      //exmove function
+      return EXMove(sourceSquare, targetSquare);
+    }
     if(move === null) return false;
     return true;
   }
@@ -105,6 +113,133 @@ function EXChess() {
     else setBoardO("white");
   }
 
+  function toggleEX(){
+    if(exToggle === false) setToggle(true);
+    else setToggle(false);
+  }
+
+  function EXMove(sourceSquare, targetSquare){
+    const gameCopy = new Chess(game.fen());
+    var piece = gameCopy.get(sourceSquare).type.charAt(0);
+    switch(piece){
+      case 'p':
+        if(game.turn() === 'w'){
+          if(p1stack < 1) return false;
+          else{
+          
+          }
+        }
+        else{
+          if(p2stack < 1) return false;
+          else{
+          
+          }
+        }
+        break;
+      case 'n':
+        if(game.turn() === 'w'){
+          if(p1stack < 2) return false;
+          else{
+          
+          }
+        }
+        else{
+          if(p2stack < 2) return false;
+          else{
+          
+          }
+        }
+        break;
+      case 'b':
+        if(game.turn() === 'w'){
+          if(p1stack < 2) return false;
+          else{
+          
+          }
+        }
+        else{
+          if(p2stack < 2) return false;
+          else{
+          
+          }
+        }
+        break;
+      case 'r':
+        if(game.turn() === 'w'){
+          if(p1stack < 3) return false;
+          else{
+          
+          }
+        }
+        else{
+          if(p2stack < 3) return false;
+          else{
+          
+          }
+        }
+        break;
+      case 'q':
+        if(game.turn() === 'w'){
+          if(p1stack < 3) return false;
+          else{
+          
+          }
+        }
+        else{
+          if(p2stack < 3) return false;
+          else{
+          
+          }
+        }
+        break;
+      case 'k':
+        if(game.turn() === 'w'){
+          if(p1stack < 3) return false;
+          else{
+            var targetPiece = gameCopy.get(targetSquare);
+            if(!targetPiece){
+              gameCopy.remove(sourceSquare);
+              if(targetSquare === 'a1'){
+                gameCopy.put({type: 'k', color: 'w'}, 'a1');
+                setGame(gameCopy);
+                p1stack -= 3;
+                return true;
+              }
+              else if(targetSquare === 'h1'){
+                gameCopy.put({type: 'k', color: 'w'}, 'h1');
+                setGame(gameCopy);
+                p1stack -= 3;
+                return true;
+              }
+            }
+          }
+        }
+        else{
+          if(p2stack < 3) return false;
+          else{
+            var targetPiece = gameCopy.get(targetSquare);
+            if(!targetPiece){
+              gameCopy.remove(sourceSquare);
+              if(targetSquare === 'a8'){
+                gameCopy.put({type: 'k', color: 'b'}, 'a8');
+                setGame(gameCopy);
+                p2stack -= 3;
+                return true;
+              }
+              else if(targetSquare === 'h8'){
+                gameCopy.put({type: 'k', color: 'b'}, 'h8');
+                setGame(gameCopy);
+                p2stack -= 3;
+                return true;
+              }
+            }
+          }
+        }
+        break;
+    }
+    return false;
+  }
+
   return (
     <div>
       {game.isGameOver() ? 
@@ -120,6 +255,7 @@ function EXChess() {
             }
             {Meter(p1meter, p2meter, p1stack, p2stack)}
             <button id="flipbutton" onClick={flipBoard}>Flip Board</button>
+            <button id="toggleEX" onClick={toggleEX}>{exToggle === false ? "Activate EX" : "Deactivate EX"}</button>
       </div>)}
     </div>
   );
