@@ -7,6 +7,13 @@ import "../css/Chessboard.css";
 function ZombieChess() {
   const [game, setGame] = useState(new Chess());
   const [boardO, setBoardO] = useState("white");
+
+  const NOT_CASTLE = 0;
+  const KINGSIDE_WHITE = 1;
+  const QUEENSIDE_WHITE = 2;
+  const KINGSIDE_BLACK = 3;
+  const QUEENSIDE_BLACK = 4;
+
   function onDrop(sourceSquare, targetSquare) {
     const move = makeAMove({
       from: sourceSquare,
@@ -38,14 +45,14 @@ function ZombieChess() {
   }
 
   function isCastle(from, to){
-    if(from !== 'e1' && from !== 'e8') return 0;
+    if(from !== 'e1' && from !== 'e8') return NOT_CASTLE;
     if(from === 'e1'){
-      if(to === 'g1') return 1; //kingside white
-      if(to === 'c1') return 2; //queenside white
+      if(to === 'g1') return KINGSIDE_WHITE;
+      if(to === 'c1') return QUEENSIDE_WHITE;
     }
     else{
-      if(to === 'g8') return 3; //kingside black
-      if(to === 'c8') return 4; //queenside black
+      if(to === 'g8') return KINGSIDE_BLACK;
+      if(to === 'c8') return QUEENSIDE_BLACK;
     }
     return 0;
   }
@@ -54,9 +61,9 @@ function ZombieChess() {
     const sourcePiece = gameCopy.get(move.from);
     const targetPiece = gameCopy.get(move.to);
       let castle = isCastle(move.from, move.to);
-      if(sourcePiece.type.charAt(0) === 'k' && castle !== 0){
+      if(sourcePiece.type.charAt(0) === 'k' && castle !== NOT_CASTLE){
         switch(castle){
-          case 1: //kingside white
+          case KINGSIDE_WHITE: 
             let f1 = gameCopy.get('f1');
             let g1 = gameCopy.get('g1');
             if((f1.color === sourcePiece.color || !f1) && (g1.color === sourcePiece.color || !g1)){
@@ -65,7 +72,7 @@ function ZombieChess() {
               return gameCopy.move(move);
             }
             break;
-          case 2: //queenside white
+          case QUEENSIDE_WHITE: 
             let b1 = gameCopy.get('b1');
             let c1 = gameCopy.get('c1');
             let d1 = gameCopy.get('d1');
@@ -76,7 +83,7 @@ function ZombieChess() {
               return gameCopy.move(move);
             }
             break;
-          case 3: //kingside black
+          case KINGSIDE_BLACK:
             let f8 = gameCopy.get('f8');
             let g8 = gameCopy.get('g8');
             if((f8.color === sourcePiece.color || !f8) && (g8.color === sourcePiece.color || !g8)){
@@ -85,7 +92,7 @@ function ZombieChess() {
               return gameCopy.move(move);
             }
             break;
-          case 4: //queenside black
+          case QUEENSIDE_BLACK:
             let b8 = gameCopy.get('b8');
             let c8 = gameCopy.get('c8');
             let d8 = gameCopy.get('d8');
