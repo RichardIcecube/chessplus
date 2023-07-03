@@ -118,8 +118,54 @@ function EXChess() {
     else setToggle(false);
   }
 
+  function nextTurn(gameCopy, turn){
+    let board = gameCopy.board();
+    if(turn === 'w'){
+      for(let i = board.length - 1; i >= 0; i--){
+        for(let j = board[i].length - 1; j >= 0; j--){
+          if(board[i][j] === null && i > 0 && board[i - 1][j] === null){
+            let atoh = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+            let onetoeight = ['8', '7', '6', '5', '4', '3', '2', '1'];
+            let pawn = atoh[j].concat(onetoeight[i]);
+            let post = atoh[j].concat(onetoeight[i - 1]);
+            gameCopy.put({type: 'p', color: turn}, pawn);
+            gameCopy.move({from: pawn, to: post, promotion: 'q'});
+            //gameCopy.remove(post);
+            //CURRENTLY, REMOVING THIS PAWN THAT WE JUST SPAWNED RESULTS IN THE GAME GIVING AN ERROR 
+            //AND THE TURN NOT PASSING TO THE NEXT PLAYER. MY CURRENT IDEA INVOLVES FIRST CHECKING IF THE ADJACENT
+            //SPACES TO THE KING'S CORNER ARE OPEN FIRST, ALLOWING THE KING TO SPAWN THERE AND MOVE TO THE DESIRED
+            //CORNER. IF THOSE SPACES ARE COVERED, THEN WE CHECK IF THERE ARE ANY OPEN PIECES THAT WE CAN REMOVE,
+            //RESPAWN IN A POSITION THAT THEY COULD MOVE TO IN THEIR ORIGINAL POSITION, AND MOVE BACK TO THEIR 
+            //ORIGINAL POSITION. THIS SOLUTION WILL TAKE A GOOD DEAL OF TIME. IN THIS CURRENT VERSION OF THE GAME,
+            //TELEPORTING THE KING SPAWNS A PAWN IN THE FIRST POSITION THE CODE FINDS WHERE IT CAN ADVANCE, AND 
+            //ADVANCES IT.
+            return gameCopy;
+          }
+        }
+      }
+    }
+    else{
+      for(let i = 0; i < board.length; i++){
+        for(let j = 0; j < board[i].length; j++){
+          if(board[i][j] === null && i < 7 && board[i + 1][j] === null){
+            let atoh = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+            let onetoeight = ['8', '7', '6', '5', '4', '3', '2', '1'];
+            let pawn = atoh[j].concat(onetoeight[i]);
+            let post = atoh[j].concat(onetoeight[i + 1]);
+            gameCopy.put({type: 'p', color: turn}, pawn);
+            gameCopy.move({from: pawn, to: post, promotion: 'q'});
+            //gameCopy.remove(post);
+            return gameCopy;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   function EXMove(sourceSquare, targetSquare){
     const gameCopy = new Chess(game.fen());
+    if(gameCopy.isCheck()) return false;
     var piece = gameCopy.get(sourceSquare).type.charAt(0);
     switch(piece){
       case 'p':
@@ -198,16 +244,38 @@ function EXChess() {
           else{
             var targetPiece = gameCopy.get(targetSquare);
             if(!targetPiece){
-              gameCopy.remove(sourceSquare);
               if(targetSquare === 'a1'){
+                /*
+                gameCopy.remove(sourceSquare);
                 gameCopy.put({type: 'k', color: 'w'}, 'a1');
+                setGame(gameCopy);
+                p1stack -= 3;
+                return true;
+                */
+                gameCopy.remove(sourceSquare);
+                var storePiece = gameCopy.get('a2');
+                gameCopy.remove('a2');
+                gameCopy.put({type: 'k', color: 'w'}, 'a2');
+                gameCopy.move({ from: 'a2', to: 'a1' });
+                gameCopy.remove('a2');
+                gameCopy.put(storePiece, 'a2');
                 setGame(gameCopy);
                 p1stack -= 3;
                 return true;
               }
               else if(targetSquare === 'h1'){
+                /*
+                gameCopy.remove(sourceSquare);
                 gameCopy.put({type: 'k', color: 'w'}, 'h1');
                 setGame(gameCopy);
+                p1stack -= 3;
+                return true;
+                */
+                gameCopy.remove(sourceSquare);
+                gameCopy.put({type: 'k', color: 'w'}, 'h1');
+                let next = nextTurn(gameCopy, 'w');
+                if(next === false) return false
+                setGame(next);
                 p1stack -= 3;
                 return true;
               }
@@ -219,14 +287,15 @@ function EXChess() {
           else{
             var targetPiece = gameCopy.get(targetSquare);
             if(!targetPiece){
-              gameCopy.remove(sourceSquare);
               if(targetSquare === 'a8'){
+                gameCopy.remove(sourceSquare);
                 gameCopy.put({type: 'k', color: 'b'}, 'a8');
                 setGame(gameCopy);
                 p2stack -= 3;
                 return true;
               }
               else if(targetSquare === 'h8'){
+                gameCopy.remove(sourceSquare);
                 gameCopy.put({type: 'k', color: 'b'}, 'h8');
                 setGame(gameCopy);
                 p2stack -= 3;
