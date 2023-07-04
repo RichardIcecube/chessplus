@@ -120,26 +120,60 @@ function EXChess() {
 
   function nextTurn(gameCopy, turn){
     let board = gameCopy.board();
+    var checktop;
+    var checkbottom;
+    var checkleft;
+    var checkright;
     if(turn === 'w'){
       for(let i = board.length - 1; i >= 0; i--){
         for(let j = board[i].length - 1; j >= 0; j--){
-          if(board[i][j] === null && i > 0 && board[i - 1][j] === null){
+          if(board[i][j]){
             let atoh = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
             let onetoeight = ['8', '7', '6', '5', '4', '3', '2', '1'];
-            let pawn = atoh[j].concat(onetoeight[i]);
-            let post = atoh[j].concat(onetoeight[i - 1]);
-            gameCopy.put({type: 'p', color: turn}, pawn);
-            gameCopy.move({from: pawn, to: post, promotion: 'q'});
-            //gameCopy.remove(post);
-            //CURRENTLY, REMOVING THIS PAWN THAT WE JUST SPAWNED RESULTS IN THE GAME GIVING AN ERROR 
-            //AND THE TURN NOT PASSING TO THE NEXT PLAYER. MY CURRENT IDEA INVOLVES FIRST CHECKING IF THE ADJACENT
-            //SPACES TO THE KING'S CORNER ARE OPEN FIRST, ALLOWING THE KING TO SPAWN THERE AND MOVE TO THE DESIRED
-            //CORNER. IF THOSE SPACES ARE COVERED, THEN WE CHECK IF THERE ARE ANY OPEN PIECES THAT WE CAN REMOVE,
-            //RESPAWN IN A POSITION THAT THEY COULD MOVE TO IN THEIR ORIGINAL POSITION, AND MOVE BACK TO THEIR 
-            //ORIGINAL POSITION. THIS SOLUTION WILL TAKE A GOOD DEAL OF TIME. IN THIS CURRENT VERSION OF THE GAME,
-            //TELEPORTING THE KING SPAWNS A PAWN IN THE FIRST POSITION THE CODE FINDS WHERE IT CAN ADVANCE, AND 
-            //ADVANCES IT.
-            return gameCopy;
+            checktop = true;
+            checkbottom = true;
+            checkleft = true;
+            checkright = true;
+            switch(board[i][j].type){
+              case 'p':
+                if(i < 6){ //prevents nondeveloped pawns from losing their ability to move forward 2 spaces
+                  if(board[i + 1][j]===null){
+                    let pre = atoh[j].concat(onetoeight[i + 1]);
+                    let post = atoh[j].concat(onetoeight[i]);
+                    let piece = gameCopy.remove(post);
+                    gameCopy.put(piece, pre);
+                    gameCopy.move({from: pre, to: post});
+                    return gameCopy;
+                  }
+                } 
+                break;
+              case 'n':
+                if(i < 2) checktop = false;
+                if(i > 5) checkbottom = false;
+                if(j < 2) checkleft = false;
+                if(j > 5) checkbottom = false;
+                break;
+              case 'b':
+                if(i === 0) checktop = false;
+                if(i === 7) checkbottom = false;
+                if(j === 0) checkleft = false;
+                if(j === 7) checkright = false;
+                break;
+              case 'r':
+                if(i === 0) checktop = false;
+                if(i === 7) checkbottom = false;
+                if(j === 0) checkleft = false;
+                if(j === 7) checkright = false;
+                break;
+              case 'q':
+                if(i === 0) checktop = false;
+                if(i === 7) checkbottom = false;
+                if(j === 0) checkleft = false;
+                if(j === 7) checkright = false;
+                break;
+              default:
+                break;
+            }
           }
         }
       }
@@ -147,20 +181,44 @@ function EXChess() {
     else{
       for(let i = 0; i < board.length; i++){
         for(let j = 0; j < board[i].length; j++){
-          if(board[i][j] === null && i < 7 && board[i + 1][j] === null){
+          if(board[i][j]){
             let atoh = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
             let onetoeight = ['8', '7', '6', '5', '4', '3', '2', '1'];
-            let pawn = atoh[j].concat(onetoeight[i]);
-            let post = atoh[j].concat(onetoeight[i + 1]);
-            gameCopy.put({type: 'p', color: turn}, pawn);
-            gameCopy.move({from: pawn, to: post, promotion: 'q'});
-            //gameCopy.remove(post);
-            return gameCopy;
+            switch(board[i][j].type){
+              case 'p':
+                if(i > 1){ //prevents nondeveloped pawns from losing their ability to move forward 2 spaces
+                  if(board[i - 1][j]===null){
+                    let pre = atoh[j].concat(onetoeight[i - 1]);
+                    let post = atoh[j].concat(onetoeight[i]);
+                    let piece = gameCopy.remove(post);
+                    gameCopy.put(piece, pre);
+                    gameCopy.move({from: pre, to: post});
+                    return gameCopy;
+                  }
+                } 
+                break;
+              case 'n':
+                break;
+              case 'b':
+                break;
+              case 'r':
+                break;
+              case 'q':
+                break;
+              default:
+                break;
+            }
           }
         }
       }
     }
     return false;
+  }
+
+  function kingTeleportAdjacent(gameCopy, turn, teleportSpace, finalSpace){
+    gameCopy.put({type: 'k', color: turn}, teleportSpace);
+    gameCopy.move({from: teleportSpace, to: finalSpace});
+    setGame(gameCopy);
   }
 
   function EXMove(sourceSquare, targetSquare){
@@ -245,37 +303,46 @@ function EXChess() {
             var targetPiece = gameCopy.get(targetSquare);
             if(!targetPiece){
               if(targetSquare === 'a1'){
-                /*
                 gameCopy.remove(sourceSquare);
-                gameCopy.put({type: 'k', color: 'w'}, 'a1');
-                setGame(gameCopy);
-                p1stack -= 3;
-                return true;
-                */
-                gameCopy.remove(sourceSquare);
-                var storePiece = gameCopy.get('a2');
-                gameCopy.remove('a2');
-                gameCopy.put({type: 'k', color: 'w'}, 'a2');
-                gameCopy.move({ from: 'a2', to: 'a1' });
-                gameCopy.remove('a2');
-                gameCopy.put(storePiece, 'a2');
-                setGame(gameCopy);
+                if(gameCopy.get('a2') && gameCopy.get('b1') && gameCopy.get('b2')){
+                  gameCopy.put({type: 'k', color: 'w'}, 'a1');
+                  let next = nextTurn(gameCopy, 'w');
+                  if(next === false) return false
+                  setGame(next);  
+                }
+                else{
+                  if(!gameCopy.get('a2')){
+                    kingTeleportAdjacent(gameCopy, 'w', 'a2', 'a1');
+                  }
+                  else if(!gameCopy.get('b1')){
+                    kingTeleportAdjacent(gameCopy, 'w', 'b1', 'a1');
+                  }
+                  else { //!gameCopy.get('b2');
+                    kingTeleportAdjacent(gameCopy, 'w', 'b2', 'a1');
+                  }
+                }
                 p1stack -= 3;
                 return true;
               }
               else if(targetSquare === 'h1'){
-                /*
                 gameCopy.remove(sourceSquare);
-                gameCopy.put({type: 'k', color: 'w'}, 'h1');
-                setGame(gameCopy);
-                p1stack -= 3;
-                return true;
-                */
-                gameCopy.remove(sourceSquare);
-                gameCopy.put({type: 'k', color: 'w'}, 'h1');
-                let next = nextTurn(gameCopy, 'w');
-                if(next === false) return false
-                setGame(next);
+                if(gameCopy.get('h2') && gameCopy.get('g1') && gameCopy.get('g2')){
+                  gameCopy.put({type: 'k', color: 'w'}, 'h1');
+                  let next = nextTurn(gameCopy, 'w');
+                  if(next === false) return false
+                  setGame(next);  
+                }
+                else{
+                  if(!gameCopy.get('h2')){
+                    kingTeleportAdjacent(gameCopy, 'w', 'h2', 'h1');
+                  }
+                  else if(!gameCopy.get('g1')){
+                    kingTeleportAdjacent(gameCopy, 'w', 'g1', 'h1');
+                  }
+                  else { //!gameCopy.get('g2');
+                    kingTeleportAdjacent(gameCopy, 'w', 'g2', 'h1');
+                  }
+                }
                 p1stack -= 3;
                 return true;
               }
@@ -289,21 +356,53 @@ function EXChess() {
             if(!targetPiece){
               if(targetSquare === 'a8'){
                 gameCopy.remove(sourceSquare);
-                gameCopy.put({type: 'k', color: 'b'}, 'a8');
-                setGame(gameCopy);
+                if(gameCopy.get('a7') && gameCopy.get('b8') && gameCopy.get('b7')){
+                  gameCopy.put({type: 'k', color: 'b'}, 'a8');
+                  let next = nextTurn(gameCopy, 'b');
+                  if(next === false) return false
+                  setGame(next);  
+                }
+                else{
+                  if(!gameCopy.get('a7')){
+                    kingTeleportAdjacent(gameCopy, 'b', 'a7', 'a8');
+                  }
+                  else if(!gameCopy.get('b8')){
+                    kingTeleportAdjacent(gameCopy, 'b', 'b8', 'a8');
+                  }
+                  else { //!gameCopy.get('b7');
+                    kingTeleportAdjacent(gameCopy, 'b', 'b7', 'a8');
+                  }
+                }
                 p2stack -= 3;
                 return true;
               }
               else if(targetSquare === 'h8'){
                 gameCopy.remove(sourceSquare);
-                gameCopy.put({type: 'k', color: 'b'}, 'h8');
-                setGame(gameCopy);
+                if(gameCopy.get('h7') && gameCopy.get('g8') && gameCopy.get('g7')){
+                  gameCopy.put({type: 'k', color: 'b'}, 'h8');
+                  let next = nextTurn(gameCopy, 'b');
+                  if(next === false) return false
+                  setGame(next);  
+                }
+                else{
+                  if(!gameCopy.get('h7')){
+                    kingTeleportAdjacent(gameCopy, 'b', 'h7', 'h8');
+                  }
+                  else if(!gameCopy.get('g8')){
+                    kingTeleportAdjacent(gameCopy, 'b', 'g8', 'h8');
+                  }
+                  else { //!gameCopy.get('g7');
+                    kingTeleportAdjacent(gameCopy, 'b', 'g7', 'h8');
+                  }
+                }
                 p2stack -= 3;
                 return true;
               }
             }
           }
         }
+        break;
+      default:
         break;
     }
     return false;
