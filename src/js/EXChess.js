@@ -118,6 +118,17 @@ function EXChess() {
     else setToggle(false);
   }
 
+  function displacePiece(gameCopy, prej, prei, postj, posti){
+    let atoh = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    let onetoeight = ['8', '7', '6', '5', '4', '3', '2', '1'];
+    let pre = atoh[prej].concat(onetoeight[prei]);
+    let post = atoh[postj].concat(onetoeight[posti]);
+    let piece = gameCopy.remove(post);
+    gameCopy.put(piece, pre);
+    gameCopy.move({from: pre, to: post});
+    return gameCopy;
+  }
+
   function nextTurn(gameCopy, turn){
     let board = gameCopy.board();
     var checktop;
@@ -128,8 +139,6 @@ function EXChess() {
       for(let i = board.length - 1; i >= 0; i--){
         for(let j = board[i].length - 1; j >= 0; j--){
           if(board[i][j]){
-            let atoh = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-            let onetoeight = ['8', '7', '6', '5', '4', '3', '2', '1'];
             checktop = true;
             checkbottom = true;
             checkleft = true;
@@ -138,16 +147,11 @@ function EXChess() {
               case 'p':
                 if(i < 6){ //prevents nondeveloped pawns from losing their ability to move forward 2 spaces
                   if(board[i + 1][j]===null){
-                    let pre = atoh[j].concat(onetoeight[i + 1]);
-                    let post = atoh[j].concat(onetoeight[i]);
-                    let piece = gameCopy.remove(post);
-                    gameCopy.put(piece, pre);
-                    gameCopy.move({from: pre, to: post});
-                    return gameCopy;
+                    return displacePiece(gameCopy, j, i + 1, j, i);
                   }
                 } 
                 break;
-              case 'n':
+              case 'n': //consider reworking to better fit the knight's movement
                 if(i < 2) checktop = false;
                 if(i > 5) checkbottom = false;
                 if(j < 2) checkleft = false;
@@ -158,6 +162,26 @@ function EXChess() {
                 if(i === 7) checkbottom = false;
                 if(j === 0) checkleft = false;
                 if(j === 7) checkright = false;
+                if(checktop && checkleft){
+                  if(board[i - 1][j - 1] === null){
+                    return displacePiece(gameCopy, j - 1, i - 1, j, i);
+                  }
+                }
+                if(checktop && checkright){
+                  if(board[i - 1][j + 1] === null){
+                    return displacePiece(gameCopy, j + 1, i - 1, j, i);
+                  }
+                }
+                if(checkbottom && checkleft){
+                  if(board[i + 1][j - 1] === null){
+                    return displacePiece(gameCopy, j - 1, i + 1, j, i);
+                  }
+                }
+                if(checkbottom && checkright) { 
+                  if(board[i + 1][j + 1] === null){
+                    return displacePiece(gameCopy, j + 1, i + 1, j, i);
+                  }
+                }
                 break;
               case 'r':
                 if(i === 0) checktop = false;
@@ -182,24 +206,45 @@ function EXChess() {
       for(let i = 0; i < board.length; i++){
         for(let j = 0; j < board[i].length; j++){
           if(board[i][j]){
-            let atoh = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-            let onetoeight = ['8', '7', '6', '5', '4', '3', '2', '1'];
+            checktop = true;
+            checkbottom = true;
+            checkleft = true;
+            checkright = true;
             switch(board[i][j].type){
               case 'p':
                 if(i > 1){ //prevents nondeveloped pawns from losing their ability to move forward 2 spaces
                   if(board[i - 1][j]===null){
-                    let pre = atoh[j].concat(onetoeight[i - 1]);
-                    let post = atoh[j].concat(onetoeight[i]);
-                    let piece = gameCopy.remove(post);
-                    gameCopy.put(piece, pre);
-                    gameCopy.move({from: pre, to: post});
-                    return gameCopy;
+                    return displacePiece(gameCopy, j, i - 1, j, i);
                   }
                 } 
                 break;
               case 'n':
                 break;
               case 'b':
+                if(i === 0) checkbottom = false;
+                if(i === 7) checktop = false;
+                if(j === 0) checkright = false;
+                if(j === 7) checkleft = false;
+                if(checktop && checkleft){
+                  if(board[i + 1][j + 1] === null){
+                    return displacePiece(gameCopy, j + 1, i + 1, j, i);
+                  }
+                }
+                if(checktop && checkright){
+                  if(board[i + 1][j - 1] === null){
+                    return displacePiece(gameCopy, j - 1, i + 1, j, i);
+                  }
+                }
+                if(checkbottom && checkleft){
+                  if(board[i - 1][j + 1] === null){
+                    return displacePiece(gameCopy, j + 1, i - 1, j, i);
+                  }
+                }
+                if(checkbottom && checkright) { 
+                  if(board[i - 1][j - 1] === null){
+                    return displacePiece(gameCopy, j - 1, i - 1, j, i);
+                  }
+                }
                 break;
               case 'r':
                 break;
