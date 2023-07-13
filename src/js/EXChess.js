@@ -139,61 +139,55 @@ function EXChess() {
       for(let i = board.length - 1; i >= 0; i--){
         for(let j = board[i].length - 1; j >= 0; j--){
           if(board[i][j]){
-            checktop = true;
-            checkbottom = true;
-            checkleft = true;
-            checkright = true;
+            checktop = (i !== 0);
+            checkbottom = (i !== 7);
+            checkleft = (j !== 0);
+            checkright = (j !== 7);
             switch(board[i][j].type){
               case 'p':
                 if(i < 6){ //prevents nondeveloped pawns from losing their ability to move forward 2 spaces
-                  if(board[i + 1][j]===null){
-                    return displacePiece(gameCopy, j, i + 1, j, i);
-                  }
+                  if(board[i + 1][j]===null) return displacePiece(gameCopy, j, i + 1, j, i);
                 } 
                 break;
-              case 'n': //consider reworking to better fit the knight's movement
-                if(i < 2) checktop = false;
-                if(i > 5) checkbottom = false;
-                if(j < 2) checkleft = false;
-                if(j > 5) checkbottom = false;
+              case 'n': 
+                let down2right1 = (i <= 5 && j <= 6);
+                let down2left1 = (i <= 5 && j >= 1);
+                let left2down1 = (j >= 2 && i <= 6);
+                let left2up1 = (j >= 2 && i >= 1);
+                let right2down1 = (j <= 5 && i <= 6);
+                let right2up1 = (j <= 5 && i <= 1);
+                let up2right1 = (i >= 2 && j <= 6);
+                let up2left1 = (i >= 2 && j >= 1);
+                if(down2left1 && board[i + 2][j - 1] === null) return displacePiece(gameCopy, j - 1, i + 2, j, i);
+                if(down2right1 && board[i + 2][j + 1] === null) return displacePiece(gameCopy, j + 1, i + 2, j, i);
+                if(left2down1 && board[i + 1][j - 2] === null) return displacePiece(gameCopy, j - 2, i + 1, j, i);
+                if(left2up1 && board[i - 1][j - 2] === null) return displacePiece(gameCopy, j - 2, i - 1, j, i);
+                if(right2down1 && board[i + 1][j + 2] === null) return displacePiece(gameCopy, j + 2, i + 1, j, i);
+                if(right2up1 && board[i - 1][j + 2] === null) return displacePiece(gameCopy, j + 2, i - 1, j, i);
+                if(up2right1 && board[i - 2][j + 1] === null) return displacePiece(gameCopy, j + 1, i - 2, j, i);
+                if(up2left1 && board[i - 2][j - 1] === null) return displacePiece(gameCopy, j - 1, i - 2, j, i);
                 break;
               case 'b':
-                if(i === 0) checktop = false;
-                if(i === 7) checkbottom = false;
-                if(j === 0) checkleft = false;
-                if(j === 7) checkright = false;
-                if(checktop && checkleft){
-                  if(board[i - 1][j - 1] === null){
-                    return displacePiece(gameCopy, j - 1, i - 1, j, i);
-                  }
-                }
-                if(checktop && checkright){
-                  if(board[i - 1][j + 1] === null){
-                    return displacePiece(gameCopy, j + 1, i - 1, j, i);
-                  }
-                }
-                if(checkbottom && checkleft){
-                  if(board[i + 1][j - 1] === null){
-                    return displacePiece(gameCopy, j - 1, i + 1, j, i);
-                  }
-                }
-                if(checkbottom && checkright) { 
-                  if(board[i + 1][j + 1] === null){
-                    return displacePiece(gameCopy, j + 1, i + 1, j, i);
-                  }
-                }
+                if(checktop && checkleft && board[i - 1][j - 1] === null) return displacePiece(gameCopy, j - 1, i - 1, j, i);
+                if(checktop && checkright && board[i - 1][j + 1] === null) return displacePiece(gameCopy, j + 1, i - 1, j, i);
+                if(checkbottom && checkleft && board[i + 1][j - 1] === null) return displacePiece(gameCopy, j - 1, i + 1, j, i);
+                if(checkbottom && checkright && board[i + 1][j + 1] === null) return displacePiece(gameCopy, j + 1, i + 1, j, i);
                 break;
               case 'r':
-                if(i === 0) checktop = false;
-                if(i === 7) checkbottom = false;
-                if(j === 0) checkleft = false;
-                if(j === 7) checkright = false;
+                if(checktop && board[i - 1][j] === null) return displacePiece(gameCopy, j, i - 1, j, i);
+                if(checkbottom && board[i + 1][j] === null) return displacePiece(gameCopy, j, i + 1, j, i);
+                if(checkleft && board[i][j - 1] === null) return displacePiece(gameCopy, j - 1, i, j, i);
+                if(checkright && board[i][j + 1] === null) return displacePiece(gameCopy, j + 1, i, j, i);
                 break;
               case 'q':
-                if(i === 0) checktop = false;
-                if(i === 7) checkbottom = false;
-                if(j === 0) checkleft = false;
-                if(j === 7) checkright = false;
+                if(checktop && board[i - 1][j] === null) return displacePiece(gameCopy, j, i - 1, j, i);
+                if(checkbottom && board[i + 1][j] === null) return displacePiece(gameCopy, j, i + 1, j, i);
+                if(checkleft && board[i][j - 1] === null) return displacePiece(gameCopy, j - 1, i, j, i);
+                if(checkright && board[i][j + 1] === null) return displacePiece(gameCopy, j + 1, i, j, i);
+                if(checktop && checkright && board[i - 1][j + 1] === null) return displacePiece(gameCopy, j + 1, i - 1, j, i);
+                if(checkbottom && checkleft && board[i + 1][j - 1] === null) return displacePiece(gameCopy, j - 1, i + 1, j, i);
+                if(checkleft && checktop && board[i - 1][j - 1] === null) return displacePiece(gameCopy, j - 1, i - 1, j, i);
+                if(checkright && checkbottom && board[i + 1][j + 1] === null) return displacePiece(gameCopy, j + 1, i + 1, j, i);
                 break;
               default:
                 break;
@@ -206,10 +200,10 @@ function EXChess() {
       for(let i = 0; i < board.length; i++){
         for(let j = 0; j < board[i].length; j++){
           if(board[i][j]){
-            checktop = true;
-            checkbottom = true;
-            checkleft = true;
-            checkright = true;
+            checkbottom = (i !== 0);
+            checktop = (i !== 7);
+            checkright = (j !== 0);
+            checkleft = (j !== 7);
             switch(board[i][j].type){
               case 'p':
                 if(i > 1){ //prevents nondeveloped pawns from losing their ability to move forward 2 spaces
@@ -219,12 +213,24 @@ function EXChess() {
                 } 
                 break;
               case 'n':
+                let up2right1 = (i <= 5 && j <= 6);
+                let up2left1 = (i <= 5 && j >= 1);
+                let left2up1 = (j >= 2 && i <= 6);
+                let left2down1 = (j >= 2 && i >= 1);
+                let right2up1 = (j <= 5 && i <= 6);
+                let right2down1 = (j <= 5 && i <= 1);
+                let down2right1 = (i >= 2 && j <= 6);
+                let down2left1 = (i >= 2 && j >= 1);
+                if(up2left1 && board[i + 2][j - 1] === null) return displacePiece(gameCopy, j - 1, i + 2, j, i);
+                if(up2right1 && board[i + 2][j + 1] === null) return displacePiece(gameCopy, j + 1, i + 2, j, i);
+                if(left2up1 && board[i + 1][j - 2] === null) return displacePiece(gameCopy, j - 2, i + 1, j, i);
+                if(left2down1 && board[i - 1][j - 2] === null) return displacePiece(gameCopy, j - 2, i - 1, j, i);
+                if(right2up1 && board[i + 1][j + 2] === null) return displacePiece(gameCopy, j + 2, i + 1, j, i);
+                if(right2down1 && board[i - 1][j + 2] === null) return displacePiece(gameCopy, j + 2, i - 1, j, i);
+                if(down2right1 && board[i - 2][j + 1] === null) return displacePiece(gameCopy, j + 1, i - 2, j, i);
+                if(down2left1 && board[i - 2][j - 1] === null) return displacePiece(gameCopy, j - 1, i - 2, j, i);
                 break;
               case 'b':
-                if(i === 0) checkbottom = false;
-                if(i === 7) checktop = false;
-                if(j === 0) checkright = false;
-                if(j === 7) checkleft = false;
                 if(checktop && checkleft){
                   if(board[i + 1][j + 1] === null){
                     return displacePiece(gameCopy, j + 1, i + 1, j, i);
@@ -247,8 +253,20 @@ function EXChess() {
                 }
                 break;
               case 'r':
+                if(checkbottom && board[i - 1][j] === null) return displacePiece(gameCopy, j, i - 1, j, i);
+                if(checktop && board[i + 1][j] === null) return displacePiece(gameCopy, j, i + 1, j, i);
+                if(checkleft && board[i][j - 1] === null) return displacePiece(gameCopy, j - 1, i, j, i);
+                if(checkright && board[i][j + 1] === null) return displacePiece(gameCopy, j + 1, i, j, i);
                 break;
               case 'q':
+                if(checkbottom && board[i - 1][j] === null) return displacePiece(gameCopy, j, i - 1, j, i);
+                if(checktop && board[i + 1][j] === null) return displacePiece(gameCopy, j, i + 1, j, i);
+                if(checkleft && board[i][j - 1] === null) return displacePiece(gameCopy, j - 1, i, j, i);
+                if(checkright && board[i][j + 1] === null) return displacePiece(gameCopy, j + 1, i, j, i);
+                if(checkbottom && checkright && board[i - 1][j + 1] === null) return displacePiece(gameCopy, j + 1, i - 1, j, i);
+                if(checktop && checkleft && board[i + 1][j - 1] === null) return displacePiece(gameCopy, j - 1, i + 1, j, i);
+                if(checkleft && checkbottom && board[i - 1][j - 1] === null) return displacePiece(gameCopy, j - 1, i - 1, j, i);
+                if(checkright && checktop && board[i + 1][j + 1] === null) return displacePiece(gameCopy, j + 1, i + 1, j, i);
                 break;
               default:
                 break;
