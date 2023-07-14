@@ -275,13 +275,44 @@ function EXChess() {
         }
       }
     }
-    return false;
+    return gameCopy;
   }
 
   function kingTeleportAdjacent(gameCopy, turn, teleportSpace, finalSpace){
     gameCopy.put({type: 'k', color: turn}, teleportSpace);
     gameCopy.move({from: teleportSpace, to: finalSpace});
     setGame(gameCopy);
+  }
+
+  function pawnBreak(gameCopy, source, target, remove){
+    let piece = gameCopy.remove(source);
+    gameCopy.put(piece, target);
+    gameCopy.remove(remove);
+    setGame(nextTurn(gameCopy, piece.color.charAt(0)));
+  }
+
+  function nextChar(c) {
+    var i = (parseInt(c, 36) + 1) % 36;
+    return (!i * 10 + i).toString(36);
+  }
+
+  function prevChar(c) {
+    var i = (parseInt(c, 36) - 1) % 36;
+    return (!i * 10 + i).toString(36);
+  }
+
+  function pawnDiagCheck(sourceSquare, targetSquare, turn){
+    let sourceLetter = sourceSquare.charAt(0);
+    let targetLetter = targetSquare.charAt(0);
+    let sourceNumber = sourceSquare.charAt(1);
+    let targetNumber = targetSquare.charAt(1);
+
+    if(turn === 'w'){
+      return ((nextChar(sourceLetter) === targetLetter || prevChar(sourceLetter) === targetLetter) && nextChar(sourceNumber) === targetNumber); 
+    }
+    else{
+      return ((nextChar(sourceLetter) === targetLetter || prevChar(sourceLetter) === targetLetter) && prevChar(sourceNumber) === targetNumber);
+    }
   }
 
   function EXMove(sourceSquare, targetSquare){
@@ -291,15 +322,31 @@ function EXChess() {
     switch(piece){
       case 'p':
         if(game.turn() === 'w'){
-          if(p1stack < 1) return false;
+          if(p1stack < 1 || gameCopy.get(targetSquare)) return false;
           else{
-          
+           if(pawnDiagCheck(sourceSquare, targetSquare, 'w')){
+            let sidePiece = targetSquare.charAt(0).concat(sourceSquare.charAt(1));
+            if(gameCopy.get(sidePiece) && gameCopy.get(sidePiece).type.charAt(0) === 'p') {
+              pawnBreak(gameCopy,sourceSquare, targetSquare, sidePiece);
+              p1stack -= 1;
+              return true;
+            }
+           }
+           return false;
           }
         }
         else{
-          if(p2stack < 1) return false;
+          if(p2stack < 1 || gameCopy.get(targetSquare)) return false;
           else{
-          
+            if(pawnDiagCheck(sourceSquare, targetSquare, 'b')){
+              let sidePiece = targetSquare.charAt(0).concat(sourceSquare.charAt(1));
+              if(gameCopy.get(sidePiece).type.charAt(0) === 'p') {
+                pawnBreak(gameCopy,sourceSquare, targetSquare, sidePiece);
+                p2stack -= 1;
+                return true;
+              }
+            }
+            return false;
           }
         }
         break;
@@ -477,9 +524,9 @@ function EXChess() {
       (<GameOver/>
       ) :
       (
-      <div class="gameboard">
-            <h1 class="game-mode" id="ex">EX Chess</h1>
-            <h1 class="turn-indicator">{game.turn() === 'b' ? "Black to Move" : "White to Move"}</h1>
+      <div className="gameboard">
+            <h1 className="game-mode" id="ex">EX Chess</h1>
+            <h1 className="turn-indicator">{game.turn() === 'b' ? "Black to Move" : "White to Move"}</h1>
             {boardO === "white" ?
               (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="white"/>) :
               (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="black"/>)
