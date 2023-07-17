@@ -4,6 +4,7 @@ import { Chessboard } from "react-chessboard";
 import Meter from "./Meter.js";
 import GameOver from "./GameOver.js";
 import "../css/Chessboard.css";
+import { getAllByTestId } from "@testing-library/react";
 
 var p1meter = 0;
 var p2meter = 0;
@@ -314,6 +315,30 @@ function EXChess() {
       return ((nextChar(sourceLetter) === targetLetter || prevChar(sourceLetter) === targetLetter) && prevChar(sourceNumber) === targetNumber);
     }
   }
+  
+  function knightFreeMove(gameCopy, sourceSquare, targetSquare){
+    gameCopy.remove(targetSquare);
+    let piece = gameCopy.remove(sourceSquare);
+    gameCopy.put(piece, targetSquare);
+    setGame(gameCopy);
+  }
+
+  function validateKnightMove(sourceSquare, targetSquare){
+    let sourceLetter = sourceSquare.charAt(0);
+    let targetLetter = targetSquare.charAt(0);
+    let sourceNumber = sourceSquare.charAt(1);
+    let targetNumber = targetSquare.charAt(1);
+
+    if(nextChar(sourceLetter) === targetLetter && nextChar(nextChar(sourceNumber)) === targetNumber) return true;
+    if(nextChar(nextChar(sourceLetter)) === targetLetter && nextChar(sourceNumber) === targetNumber) return true;
+    if(nextChar(sourceLetter) === targetLetter && prevChar(prevChar(sourceNumber)) === targetNumber) return true;
+    if(prevChar(sourceLetter) === targetLetter && prevChar(prevChar(sourceNumber)) === targetNumber) return true;
+    if(prevChar(prevChar(sourceLetter)) === targetLetter && prevChar(sourceNumber) === targetNumber) return true;
+    if(prevChar(sourceLetter) === targetLetter && nextChar(nextChar(sourceNumber)) === targetNumber) return true;
+    if(nextChar(nextChar(sourceLetter)) === targetLetter && prevChar(sourceNumber) === targetNumber) return true;
+    if(prevChar(prevChar(sourceLetter)) === targetLetter && nextChar(sourceNumber) === targetNumber) return true;
+    return false;
+  }
 
   function EXMove(sourceSquare, targetSquare){
     const gameCopy = new Chess(game.fen());
@@ -329,6 +354,7 @@ function EXChess() {
             if(gameCopy.get(sidePiece) && gameCopy.get(sidePiece).type.charAt(0) === 'p') {
               pawnBreak(gameCopy,sourceSquare, targetSquare, sidePiece);
               p1stack -= 1;
+              toggleEX();
               return true;
             }
            }
@@ -343,6 +369,7 @@ function EXChess() {
               if(gameCopy.get(sidePiece).type.charAt(0) === 'p') {
                 pawnBreak(gameCopy,sourceSquare, targetSquare, sidePiece);
                 p2stack -= 1;
+                toggleEX();
                 return true;
               }
             }
@@ -352,15 +379,24 @@ function EXChess() {
         break;
       case 'n':
         if(game.turn() === 'w'){
-          if(p1stack < 2) return false;
+          let test = gameCopy.get(targetSquare);
+          if(p1stack < 2 || !gameCopy.get(targetSquare) || !validateKnightMove(sourceSquare, targetSquare)) return false;
           else{
-          
+            if(gameCopy.get(targetSquare).color === 'w') return false;
+            knightFreeMove(gameCopy, sourceSquare, targetSquare);
+            p1stack -= 2;
+            toggleEX();
+            return true;
           }
         }
         else{
-          if(p2stack < 2) return false;
+          if(p2stack < 2 || !gameCopy.get(targetSquare)|| !validateKnightMove(sourceSquare, targetSquare)) return false;
           else{
-          
+            if(gameCopy.get(targetSquare).color === 'b') return false;
+            knightFreeMove(gameCopy, sourceSquare, targetSquare);
+            p1stack -= 2;
+            toggleEX();
+            return true;
           }
         }
         break;
@@ -432,6 +468,7 @@ function EXChess() {
                   }
                 }
                 p1stack -= 3;
+                toggleEX();
                 return true;
               }
               else if(targetSquare === 'h1'){
@@ -454,6 +491,7 @@ function EXChess() {
                   }
                 }
                 p1stack -= 3;
+                toggleEX();
                 return true;
               }
             }
@@ -484,6 +522,7 @@ function EXChess() {
                   }
                 }
                 p2stack -= 3;
+                toggleEX();
                 return true;
               }
               else if(targetSquare === 'h8'){
@@ -506,6 +545,7 @@ function EXChess() {
                   }
                 }
                 p2stack -= 3;
+                toggleEX();
                 return true;
               }
             }
