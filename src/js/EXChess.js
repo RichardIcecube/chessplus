@@ -340,6 +340,15 @@ function EXChess() {
     return false;
   }
 
+  function validateRookDiag(sourceSquare, targetSquare){
+    let sourceLetter = (parseInt(sourceSquare.charAt(0), 36) + 1) % 36;
+    let targetLetter = (parseInt(targetSquare.charAt(0), 36) + 1) % 36;
+    let sourceNumber = (parseInt(sourceSquare.charAt(1), 36) + 1) % 36;
+    let targetNumber = (parseInt(targetSquare.charAt(1), 36) + 1) % 36;
+
+    if(Math.abs(targetLetter - sourceLetter) === Math.abs(targetNumber - sourceNumber)) return true;       
+    return false;
+  }
   function EXMove(sourceSquare, targetSquare){
     const gameCopy = new Chess(game.fen());
     if(gameCopy.isCheck()) return false;
@@ -380,31 +389,31 @@ function EXChess() {
       case 'n':
         if(game.turn() === 'w'){
           let test = gameCopy.get(targetSquare);
-          if(p1stack < 2 || !gameCopy.get(targetSquare) || !validateKnightMove(sourceSquare, targetSquare)) return false;
+          if(p1stack < 3 || !gameCopy.get(targetSquare) || !validateKnightMove(sourceSquare, targetSquare)) return false;
           else{
             if(gameCopy.get(targetSquare).color === 'w') return false;
             knightFreeMove(gameCopy, sourceSquare, targetSquare);
-            p1stack -= 2;
+            p1stack -= 3;
             toggleEX();
             return true;
           }
         }
         else{
-          if(p2stack < 2 || !gameCopy.get(targetSquare)|| !validateKnightMove(sourceSquare, targetSquare)) return false;
+          if(p2stack < 3 || !gameCopy.get(targetSquare)|| !validateKnightMove(sourceSquare, targetSquare)) return false;
           else{
             if(gameCopy.get(targetSquare).color === 'b') return false;
             knightFreeMove(gameCopy, sourceSquare, targetSquare);
-            p1stack -= 2;
+            p1stack -= 3;
             toggleEX();
             return true;
           }
         }
         break;
       case 'b':
-        if(game.turn() === 'w'){
+        if(game.turn() === 'w' || gameCopy.get(targetSquare)){
           if(p1stack < 2) return false;
           else{
-          
+            
           }
         }
         else{
@@ -416,15 +425,27 @@ function EXChess() {
         break;
       case 'r':
         if(game.turn() === 'w'){
-          if(p1stack < 3) return false;
+          if(p1stack < 3 || gameCopy.get(targetSquare) || !validateRookDiag(sourceSquare, targetSquare)) return false;
           else{
-          
+            knightFreeMove(gameCopy, sourceSquare, targetSquare);
+            let next = nextTurn(gameCopy, 'w');
+            if(!next) return false;
+            setGame(next);
+            p1stack -= 3;
+            toggleEX();
+            return true;
           }
         }
         else{
-          if(p2stack < 3) return false;
+          if(p2stack < 3 || gameCopy.get(targetSquare) || !validateRookDiag(sourceSquare, targetSquare)) return false;
           else{
-          
+            knightFreeMove(gameCopy, sourceSquare, targetSquare);
+            let next = nextTurn(gameCopy, 'w');
+            if(!next) return false;
+            setGame(next);
+            p1stack -= 3;
+            toggleEX();
+            return true;
           }
         }
         break;
