@@ -61,8 +61,14 @@
     top: 100px;
 }
 
+#undobutton{
+    position:absolute;
+    right:105px;
+    top: 170px;
+}
+
 #toggleEX{
     position: absolute;
     right: 85px;
-    top: 170px;
+    top: 240px;
 }

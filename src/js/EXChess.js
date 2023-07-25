@@ -14,6 +14,8 @@ function EXChess() {
   var curPiece;
 
   const [game, setGame] = useState(new Chess());
+  const [prevgame, setPrevGame] = useState(new Chess());
+  const [prevmeter, setPrevMeter] = useState(0);
   const [boardO, setBoardO] = useState("white");
   const [exToggle, setToggle] = useState(false);
 
@@ -47,6 +49,7 @@ function EXChess() {
   function makeAMove(move) {
     const gameCopy = new Chess(game.fen());
     const result = buildMeter(move, gameCopy);   
+    setPrevGame(game);
     setGame(gameCopy);
     if(gameCopy.isGameOver()){
       p1meter = 0;
@@ -88,9 +91,11 @@ function EXChess() {
       }
 
       if(game.turn() === 'b' && output !== null){
+        setPrevMeter(builtMeter);
         p2meter += builtMeter;
       }
       else if(game.turn() === 'w' && output !== null){
+        setPrevMeter(builtMeter);
         p1meter += builtMeter;
       }
 
@@ -113,6 +118,14 @@ function EXChess() {
     else setBoardO("white");
   }
 
+  function undoMove(){
+    if(game.turn() === 'b') 
+      p1meter -= prevmeter;
+    else 
+      p2meter -= prevmeter;
+    setPrevMeter(0);
+    setGame(prevgame);
+  }
   function toggleEX(){
     if(exToggle === false) setToggle(true);
     else setToggle(false);
@@ -281,6 +294,7 @@ function EXChess() {
   function kingTeleportAdjacent(gameCopy, turn, teleportSpace, finalSpace){
     gameCopy.put({type: 'k', color: turn}, teleportSpace);
     gameCopy.move({from: teleportSpace, to: finalSpace});
+    setPrevGame(game);
     setGame(gameCopy);
   }
 
@@ -288,6 +302,7 @@ function EXChess() {
     let piece = gameCopy.remove(source);
     gameCopy.put(piece, target);
     gameCopy.remove(remove);
+    setPrevGame(game);
     setGame(nextTurn(gameCopy, piece.color.charAt(0)));
   }
 
@@ -319,6 +334,7 @@ function EXChess() {
     gameCopy.remove(targetSquare);
     let piece = gameCopy.remove(sourceSquare);
     gameCopy.put(piece, targetSquare);
+    setPrevGame(game);
     setGame(gameCopy);
   }
 
@@ -413,6 +429,7 @@ function EXChess() {
             freeMove(gameCopy, sourceSquare, targetSquare);
             let next = nextTurn(gameCopy, 'w');
             if(!next) return false;
+            setPrevGame(game);
             setGame(next);
             p1stack -= 2;
             toggleEX();
@@ -426,13 +443,13 @@ function EXChess() {
             freeMove(gameCopy, sourceSquare, targetSquare);
             let next = nextTurn(gameCopy, 'b');
             if(!next) return false;
+            setPrevGame(game);
             setGame(next);
             p2stack -= 2;
             toggleEX();
             return true;
           }
         }
-        break;
       case 'r':
         if(game.turn() === 'w'){
           if(p1stack < 3 || gameCopy.get(targetSquare) || !validateDiag(sourceSquare, targetSquare)) return false;
@@ -440,6 +457,7 @@ function EXChess() {
             freeMove(gameCopy, sourceSquare, targetSquare);
             let next = nextTurn(gameCopy, 'w');
             if(!next) return false;
+            setPrevGame(game);
             setGame(next);
             p1stack -= 3;
             toggleEX();
@@ -452,6 +470,7 @@ function EXChess() {
             freeMove(gameCopy, sourceSquare, targetSquare);
             let next = nextTurn(gameCopy, 'b');
             if(!next) return false;
+            setPrevGame(game);
             setGame(next);
             p1stack -= 3;
             toggleEX();
@@ -465,7 +484,8 @@ function EXChess() {
             if(gameCopy.get(targetSquare).color === 'w' || gameCopy.get(targetSquare).type === 'k' || gameCopy.get(targetSquare).type === 'q') return false;
             gameCopy.remove(targetSquare);
             let next = nextTurn(gameCopy, 'w');
-            if(next === false) return false
+            if(next === false) return false;
+            setPrevGame(game);
             setGame(next); 
             p1stack -= 4;
             toggleEX();
@@ -478,14 +498,14 @@ function EXChess() {
             if(gameCopy.get(targetSquare).color === 'b' || gameCopy.get(targetSquare).type === 'k' || gameCopy.get(targetSquare).type === 'q') return false;
             gameCopy.remove(targetSquare);
             let next = nextTurn(gameCopy, 'b');
-            if(next === false) return false
+            if(next === false) return false;
+            setPrevGame(game);
             setGame(next); 
             p2stack -= 4;
             toggleEX();
             return true;
           }
         }
-        break;
       case 'k':
         if(game.turn() === 'w'){
           if(p1stack < 3) return false;
@@ -497,7 +517,8 @@ function EXChess() {
                 if(gameCopy.get('a2') && gameCopy.get('b1') && gameCopy.get('b2')){
                   gameCopy.put({type: 'k', color: 'w'}, 'a1');
                   let next = nextTurn(gameCopy, 'w');
-                  if(next === false) return false
+                  if(next === false) return false;
+                  setPrevGame(game);
                   setGame(next);  
                 }
                 else{
@@ -520,7 +541,8 @@ function EXChess() {
                 if(gameCopy.get('h2') && gameCopy.get('g1') && gameCopy.get('g2')){
                   gameCopy.put({type: 'k', color: 'w'}, 'h1');
                   let next = nextTurn(gameCopy, 'w');
-                  if(next === false) return false
+                  if(next === false) return false;
+                  setPrevGame(game);
                   setGame(next);  
                 }
                 else{
@@ -551,7 +573,8 @@ function EXChess() {
                 if(gameCopy.get('a7') && gameCopy.get('b8') && gameCopy.get('b7')){
                   gameCopy.put({type: 'k', color: 'b'}, 'a8');
                   let next = nextTurn(gameCopy, 'b');
-                  if(next === false) return false
+                  if(next === false) return false;
+                  setPrevGame(game);
                   setGame(next);  
                 }
                 else{
@@ -574,7 +597,8 @@ function EXChess() {
                 if(gameCopy.get('h7') && gameCopy.get('g8') && gameCopy.get('g7')){
                   gameCopy.put({type: 'k', color: 'b'}, 'h8');
                   let next = nextTurn(gameCopy, 'b');
-                  if(next === false) return false
+                  if(next === false) return false;
+                  setPrevGame(game);
                   setGame(next);  
                 }
                 else{
@@ -617,6 +641,7 @@ function EXChess() {
             }
             {Meter(p1meter, p2meter, p1stack, p2stack)}
             <button id="flipbutton" onClick={flipBoard}>Flip Board</button>
+            <button id="undobutton" onClick={undoMove}>Undo</button>
             <button id="toggleEX" onClick={toggleEX}>{exToggle === false ? "Activate EX" : "Deactivate EX"}</button>
       </div>)}
     </div>
