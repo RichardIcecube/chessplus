@@ -400,13 +400,13 @@ function EXChess() {
           else{
             if(gameCopy.get(targetSquare).color === 'b' || gameCopy.get(targetSquare).type === 'k') return false;
             freeMove(gameCopy, sourceSquare, targetSquare);
-            p1stack -= 3;
+            p2stack -= 3;
             toggleEX();
             return true;
           }
         }
       case 'b':
-        if(game.turn() === 'w' || gameCopy.get(targetSquare)){
+        if(game.turn() === 'w'){
           if(p1stack < 2 || !validateDiag(sourceSquare, targetSquare)) return false;
           else{
             if(gameCopy.get(targetSquare) !== false && (gameCopy.get(targetSquare).color === 'w' || gameCopy.get(targetSquare).type === 'k')) return false;
@@ -420,7 +420,7 @@ function EXChess() {
           }
         }
         else{
-          if(p2stack < 2) return false;
+          if(p2stack < 2 || !validateDiag(sourceSquare, targetSquare)) return false;
           else{
             if(gameCopy.get(targetSquare) !== false && (gameCopy.get(targetSquare).color === 'b' || gameCopy.get(targetSquare).type === 'k')) return false;
             freeMove(gameCopy, sourceSquare, targetSquare);
