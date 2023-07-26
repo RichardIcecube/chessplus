@@ -366,7 +366,7 @@ function EXChess() {
   }
   function EXMove(sourceSquare, targetSquare){
     const gameCopy = new Chess(game.fen());
-    if(gameCopy.isCheck()) return false;
+    if(gameCopy.isCheck() && gameCopy.get(sourceSquare).type !== 'k') return false;
     var piece = gameCopy.get(sourceSquare).type.charAt(0);
     switch(piece){
       case 'p':
