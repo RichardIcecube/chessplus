@@ -67,6 +67,28 @@
     top: 170px;
 }
 
+#blacklabel{
+    position:absolute;
+    right: 10px;
+    bottom: 50px;
+    font-size: 25px;
+    font-weight: bold;
+    color: black;
+    background-color: white;
+    border: 3px solid black;
+}
+
+#whitelabel{
+    position:absolute;
+    left: 10px;
+    bottom: 50px;
+    font-size: 25px;
+    font-weight: bold;
+    color: black;
+    background-color: white;
+    border: 3px solid black;
+}
+
 #toggleEX{
     position: absolute;
     right: 85px;

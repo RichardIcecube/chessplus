@@ -16,6 +16,8 @@ function EXChess() {
   const [game, setGame] = useState(new Chess());
   const [prevgame, setPrevGame] = useState(new Chess());
   const [prevmeter, setPrevMeter] = useState(0);
+  const [prevstack, setPrevStack] = useState(0);
+  const [lastpiece, setLastPiece] = useState('');
   const [boardO, setBoardO] = useState("white");
   const [exToggle, setToggle] = useState(false);
 
@@ -30,7 +32,8 @@ function EXChess() {
   const METER_STACK = 1;
 
   function onDrop(sourceSquare, targetSquare) {
-    var move 
+    var move;
+    if(lastpiece !== '' && game.get(sourceSquare).type !== lastpiece) return false;
     if(exToggle === false) {
       move = makeAMove({
         from: sourceSquare,
@@ -43,6 +46,7 @@ function EXChess() {
       return EXMove(sourceSquare, targetSquare);
     }
     if(move === null) return false;
+    setLastPiece('');
     return true;
   }
 
@@ -100,12 +104,14 @@ function EXChess() {
       }
 
       while(p1meter >= MAX_METER){
-        p1meter -= MAX_METER;  
+        p1meter -= MAX_METER;
+        setPrevStack(METER_STACK);  
         p1stack += METER_STACK;
       }
 
       while(p2meter >= MAX_METER){
-        p2meter -= MAX_METER;  
+        p2meter -= MAX_METER;
+        setPrevStack(METER_STACK);  
         p2stack += METER_STACK;
       }
 
@@ -119,10 +125,41 @@ function EXChess() {
   }
 
   function undoMove(){
-    if(game.turn() === 'b') 
-      p1meter -= prevmeter;
-    else 
-      p2meter -= prevmeter;
+    if(prevstack === 0){
+      if(game.turn() === 'b') 
+        p1meter -= prevmeter;
+      else 
+        p2meter -= prevmeter;
+    }
+    else if(prevstack >= 0){
+      if(game.turn() === 'b'){
+        if(p1meter === 0){
+          p1stack -= prevstack;
+          p1meter = MAX_METER - prevmeter;
+        }
+        else{
+          p1meter = MAX_METER - (prevmeter - p1meter);
+          p1stack -= prevstack;
+        }
+      }
+      else{
+        if(p2meter === 0){
+          p2stack -= prevstack;
+          p2meter = MAX_METER - prevmeter;
+        }
+        else{
+          p2meter = MAX_METER - (prevmeter - p2meter);
+          p2stack -= prevstack;
+        }
+      }
+    }
+    else{
+      if(game.turn() === 'b'){
+        p1stack -= prevstack;
+      }
+      else p2stack -= prevstack;
+    }
+    setPrevStack(0);
     setPrevMeter(0);
     setGame(prevgame);
   }
@@ -364,6 +401,17 @@ function EXChess() {
     if(Math.abs(targetLetter - sourceLetter) === Math.abs(targetNumber - sourceNumber)) return true;       
     return false;
   }
+
+  function validateLine(sourceSquare, targetSquare){
+    let sourceLetter = sourceSquare.charAt(0);
+    let targetLetter = targetSquare.charAt(0);
+    let sourceNumber = sourceSquare.charAt(1);
+    let targetNumber = targetSquare.charAt(1);
+
+    if(sourceLetter === targetLetter || sourceNumber === targetNumber) return true;
+    return false;
+  }
+
   function EXMove(sourceSquare, targetSquare){
     const gameCopy = new Chess(game.fen());
     if(gameCopy.isCheck() && gameCopy.get(sourceSquare).type !== 'k') return false;
@@ -378,6 +426,7 @@ function EXChess() {
             if(gameCopy.get(sidePiece) && gameCopy.get(sidePiece).type.charAt(0) === 'p') {
               pawnBreak(gameCopy,sourceSquare, targetSquare, sidePiece);
               p1stack -= 1;
+              setPrevStack(-1);
               toggleEX();
               return true;
             }
@@ -393,6 +442,7 @@ function EXChess() {
               if(gameCopy.get(sidePiece).type.charAt(0) === 'p') {
                 pawnBreak(gameCopy,sourceSquare, targetSquare, sidePiece);
                 p2stack -= 1;
+                setPrevStack(-1);
                 toggleEX();
                 return true;
               }
@@ -407,6 +457,8 @@ function EXChess() {
             if(gameCopy.get(targetSquare).color === 'w' || gameCopy.get(targetSquare).type === 'k') return false;
             freeMove(gameCopy, sourceSquare, targetSquare);
             p1stack -= 3;
+            setPrevStack(-3);
+            setLastPiece('n');
             toggleEX();
             return true;
           }
@@ -417,6 +469,8 @@ function EXChess() {
             if(gameCopy.get(targetSquare).color === 'b' || gameCopy.get(targetSquare).type === 'k') return false;
             freeMove(gameCopy, sourceSquare, targetSquare);
             p2stack -= 3;
+            setPrevStack(-3);
+            setLastPiece('n');
             toggleEX();
             return true;
           }
@@ -432,6 +486,7 @@ function EXChess() {
             setPrevGame(game);
             setGame(next);
             p1stack -= 2;
+            setPrevStack(-2);
             toggleEX();
             return true;
           }
@@ -446,33 +501,32 @@ function EXChess() {
             setPrevGame(game);
             setGame(next);
             p2stack -= 2;
+            setPrevStack(-2);
             toggleEX();
             return true;
           }
         }
       case 'r':
         if(game.turn() === 'w'){
-          if(p1stack < 3 || gameCopy.get(targetSquare) || !validateDiag(sourceSquare, targetSquare)) return false;
+          if(p1stack < 3 || gameCopy.get(targetSquare) || !validateLine(sourceSquare, targetSquare)) return false;
           else{
             freeMove(gameCopy, sourceSquare, targetSquare);
-            let next = nextTurn(gameCopy, 'w');
-            if(!next) return false;
             setPrevGame(game);
-            setGame(next);
             p1stack -= 3;
+            setPrevStack(-3);
+            setLastPiece('r');
             toggleEX();
             return true;
           }
         }
         else{
-          if(p2stack < 3 || gameCopy.get(targetSquare) || !validateDiag(sourceSquare, targetSquare)) return false;
+          if(p2stack < 3 || gameCopy.get(targetSquare) || !validateLine(sourceSquare, targetSquare)) return false;
           else{
             freeMove(gameCopy, sourceSquare, targetSquare);
-            let next = nextTurn(gameCopy, 'b');
-            if(!next) return false;
             setPrevGame(game);
-            setGame(next);
             p2stack -= 3;
+            setPrevStack(-3);
+            setLastPiece('r');
             toggleEX();
             return true;
           }
@@ -488,6 +542,7 @@ function EXChess() {
             setPrevGame(game);
             setGame(next); 
             p1stack -= 4;
+            setPrevStack(-4);
             toggleEX();
             return true;
           }
@@ -502,6 +557,7 @@ function EXChess() {
             setPrevGame(game);
             setGame(next); 
             p2stack -= 4;
+            setPrevStack(-4);
             toggleEX();
             return true;
           }
@@ -533,6 +589,7 @@ function EXChess() {
                   }
                 }
                 p1stack -= 3;
+                setPrevStack(-3);
                 toggleEX();
                 return true;
               }
@@ -557,6 +614,7 @@ function EXChess() {
                   }
                 }
                 p1stack -= 3;
+                setPrevStack(-3);
                 toggleEX();
                 return true;
               }
@@ -589,6 +647,7 @@ function EXChess() {
                   }
                 }
                 p2stack -= 3;
+                setPrevMeter(-3);
                 toggleEX();
                 return true;
               }
@@ -613,6 +672,7 @@ function EXChess() {
                   }
                 }
                 p2stack -= 3;
+                setPrevMeter(-3);
                 toggleEX();
                 return true;
               }
@@ -640,6 +700,8 @@ function EXChess() {
               (<Chessboard id="chessboard" position={game.fen()} onPieceDrop={onDrop} boardOrientation="black"/>)
             }
             {Meter(p1meter, p2meter, p1stack, p2stack)}
+            <label id="blacklabel">Black</label>
+            <label id="whitelabel">White</label>
             <button id="flipbutton" onClick={flipBoard}>Flip Board</button>
             <button id="undobutton" onClick={undoMove}>Undo</button>
             <button id="toggleEX" onClick={toggleEX}>{exToggle === false ? "Activate EX" : "Deactivate EX"}</button>
