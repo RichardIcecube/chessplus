@@ -472,7 +472,7 @@ function EXChess() {
             if(!next) return false;
             setPrevGame(game);
             setGame(next);
-            p1stack -= 3;
+            p2stack -= 3;
             toggleEX();
             return true;
           }
