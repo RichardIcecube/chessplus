@@ -31,15 +31,70 @@ function EXChess() {
   const MAX_METER = 280;
   const METER_STACK = 1;
 
+  function takeMeter(targetSquare, turn){
+    let piece = game.get(targetSquare).type;
+    var whiteMod;
+    var blackMod;
+    if(turn === 'w'){
+      whiteMod = 0.5;
+      blackMod = 0.4;
+    }
+    else{
+      whiteMod = 0.4;
+      blackMod = 0.5;
+    }
+    switch(piece){
+      case 'p':
+        p1meter += PAWN_METER_GAIN * whiteMod;
+        p2meter += PAWN_METER_GAIN * blackMod;
+      break;
+      case 'b':
+        p1meter += BISHOP_METER_GAIN * whiteMod;
+        p2meter += BISHOP_METER_GAIN * blackMod;
+      break;
+      case 'n':
+        p1meter += KNIGHT_METER_GAIN * whiteMod;
+        p2meter += KNIGHT_METER_GAIN * blackMod;
+      break;
+      case 'r':
+        p1meter += ROOK_METER_GAIN * whiteMod;
+        p2meter += ROOK_METER_GAIN * blackMod;
+      break;
+      case 'q':
+        p1meter += QUEEN_METER_GAIN * whiteMod;
+        p2meter += QUEEN_METER_GAIN * blackMod;
+      break;
+      case 'k':
+        p1meter += KING_METER_GAIN * whiteMod;
+        p2meter += KING_METER_GAIN * blackMod;
+      break;
+      default:
+        break;
+    }
+    while(p1meter >= MAX_METER){
+      p1meter -= MAX_METER;
+      setPrevStack(METER_STACK);  
+      p1stack += METER_STACK;
+    }
+
+    while(p2meter >= MAX_METER){
+      p2meter -= MAX_METER;
+      setPrevStack(METER_STACK);  
+      p2stack += METER_STACK;
+    }
+  }
+
   function onDrop(sourceSquare, targetSquare) {
     var move;
     if(lastpiece !== '' && game.get(sourceSquare).type !== lastpiece) return false;
+    if(game.get(targetSquare).type === 'k' && exToggle === false) return false;
     if(exToggle === false) {
       move = makeAMove({
         from: sourceSquare,
         to: targetSquare,
         promotion: "q",
       });
+      if(game.get(targetSquare) !== false) takeMeter(targetSquare, game.turn());
     }
     else{
       //exmove function
@@ -161,6 +216,7 @@ function EXChess() {
     }
     setPrevStack(0);
     setPrevMeter(0);
+    setLastPiece('');
     setGame(prevgame);
   }
   function toggleEX(){
@@ -508,10 +564,17 @@ function EXChess() {
         }
       case 'r':
         if(game.turn() === 'w'){
-          if(p1stack < 3 || gameCopy.get(targetSquare) || !validateLine(sourceSquare, targetSquare)) return false;
+          if(p1stack < 3 || !gameCopy.get(targetSquare)) return false;
           else{
-            freeMove(gameCopy, sourceSquare, targetSquare);
+            if(gameCopy.get(targetSquare).type !== 'k') return false
+            let rook = gameCopy.remove(sourceSquare);
+            let king = gameCopy.remove(targetSquare);
+            gameCopy.put(rook, targetSquare);
+            gameCopy.put(king, sourceSquare);
+            let next = nextTurn(gameCopy, 'w');
+            if(!next) return false;
             setPrevGame(game);
+            setGame(next);
             p1stack -= 3;
             setPrevStack(-3);
             setLastPiece('r');
@@ -520,10 +583,17 @@ function EXChess() {
           }
         }
         else{
-          if(p2stack < 3 || gameCopy.get(targetSquare) || !validateLine(sourceSquare, targetSquare)) return false;
+          if(p2stack < 3 || !gameCopy.get(targetSquare)) return false;
           else{
-            freeMove(gameCopy, sourceSquare, targetSquare);
+            if(gameCopy.get(targetSquare).type !== 'k') return false;
+            let rook = gameCopy.remove(sourceSquare);
+            let king = gameCopy.remove(targetSquare);
+            gameCopy.put(rook, targetSquare);
+            gameCopy.put(king, sourceSquare);
+            let next = nextTurn(gameCopy, 'b');
+            if(!next) return false;
             setPrevGame(game);
+            setGame(next);
             p2stack -= 3;
             setPrevStack(-3);
             setLastPiece('r');
@@ -564,7 +634,7 @@ function EXChess() {
         }
       case 'k':
         if(game.turn() === 'w'){
-          if(p1stack < 3) return false;
+          if(p1stack < 2) return false;
           else{
             var targetPiece = gameCopy.get(targetSquare);
             if(!targetPiece){
@@ -588,8 +658,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'w', 'b2', 'a1');
                   }
                 }
-                p1stack -= 3;
-                setPrevStack(-3);
+                p1stack -= 2;
+                setPrevStack(-2);
                 toggleEX();
                 return true;
               }
@@ -613,8 +683,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'w', 'g2', 'h1');
                   }
                 }
-                p1stack -= 3;
-                setPrevStack(-3);
+                p1stack -= 2;
+                setPrevStack(-2);
                 toggleEX();
                 return true;
               }
@@ -622,7 +692,7 @@ function EXChess() {
           }
         }
         else{
-          if(p2stack < 3) return false;
+          if(p2stack < 2) return false;
           else{
             var targetPiece = gameCopy.get(targetSquare);
             if(!targetPiece){
@@ -646,8 +716,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'b', 'b7', 'a8');
                   }
                 }
-                p2stack -= 3;
-                setPrevMeter(-3);
+                p2stack -= 2;
+                setPrevMeter(-2);
                 toggleEX();
                 return true;
               }
@@ -671,8 +741,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'b', 'g7', 'h8');
                   }
                 }
-                p2stack -= 3;
-                setPrevMeter(-3);
+                p2stack -= 2;
+                setPrevMeter(-2);
                 toggleEX();
                 return true;
               }
