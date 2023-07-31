@@ -20,6 +20,7 @@ function EXChess() {
   const [lastpiece, setLastPiece] = useState('');
   const [boardO, setBoardO] = useState("white");
   const [exToggle, setToggle] = useState(false);
+  const [resign, setResign] = useState(false);
 
   const PAWN_METER_GAIN = 30;
   const KNIGHT_METER_GAIN = 60;
@@ -36,12 +37,12 @@ function EXChess() {
     var whiteMod;
     var blackMod;
     if(turn === 'w'){
-      whiteMod = 0.5;
-      blackMod = 0.4;
+      whiteMod = 0.7;
+      blackMod = 0.6;
     }
     else{
-      whiteMod = 0.4;
-      blackMod = 0.5;
+      whiteMod = 0.6;
+      blackMod = 0.7;
     }
     switch(piece){
       case 'p':
@@ -222,6 +223,9 @@ function EXChess() {
   function toggleEX(){
     if(exToggle === false) setToggle(true);
     else setToggle(false);
+  }
+  function toggleResign(){
+    setResign(true);
   }
 
   function displacePiece(gameCopy, prej, prei, postj, posti){
@@ -634,10 +638,10 @@ function EXChess() {
         }
       case 'k':
         if(game.turn() === 'w'){
-          if(p1stack < 2) return false;
+          if(p1stack < 3) return false;
           else{
             var targetPiece = gameCopy.get(targetSquare);
-            if(!targetPiece){
+            if(targetPiece.color !== 'w'){
               if(targetSquare === 'a1'){
                 gameCopy.remove(sourceSquare);
                 if(gameCopy.get('a2') && gameCopy.get('b1') && gameCopy.get('b2')){
@@ -658,8 +662,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'w', 'b2', 'a1');
                   }
                 }
-                p1stack -= 2;
-                setPrevStack(-2);
+                p1stack -= 3;
+                setPrevStack(-3);
                 toggleEX();
                 return true;
               }
@@ -683,8 +687,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'w', 'g2', 'h1');
                   }
                 }
-                p1stack -= 2;
-                setPrevStack(-2);
+                p1stack -= 3;
+                setPrevStack(-3);
                 toggleEX();
                 return true;
               }
@@ -692,10 +696,10 @@ function EXChess() {
           }
         }
         else{
-          if(p2stack < 2) return false;
+          if(p2stack < 3) return false;
           else{
             var targetPiece = gameCopy.get(targetSquare);
-            if(!targetPiece){
+            if(targetPiece.color !== 'b'){
               if(targetSquare === 'a8'){
                 gameCopy.remove(sourceSquare);
                 if(gameCopy.get('a7') && gameCopy.get('b8') && gameCopy.get('b7')){
@@ -716,8 +720,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'b', 'b7', 'a8');
                   }
                 }
-                p2stack -= 2;
-                setPrevMeter(-2);
+                p2stack -= 3;
+                setPrevMeter(-3);
                 toggleEX();
                 return true;
               }
@@ -741,8 +745,8 @@ function EXChess() {
                     kingTeleportAdjacent(gameCopy, 'b', 'g7', 'h8');
                   }
                 }
-                p2stack -= 2;
-                setPrevMeter(-2);
+                p2stack -= 3;
+                setPrevMeter(-3);
                 toggleEX();
                 return true;
               }
@@ -758,7 +762,7 @@ function EXChess() {
 
   return (
     <div>
-      {game.isGameOver() ? 
+      {game.isGameOver() || resign ? 
       (<GameOver/>
       ) :
       (
@@ -774,6 +778,7 @@ function EXChess() {
             <label id="whitelabel">White</label>
             <button id="flipbutton" onClick={flipBoard}>Flip Board</button>
             <button id="undobutton" onClick={undoMove}>Undo</button>
+            <button id="resignbutton" onClick={toggleResign}>Resign</button>
             <button id="toggleEX" onClick={toggleEX}>{exToggle === false ? "Activate EX" : "Deactivate EX"}</button>
       </div>)}
     </div>
