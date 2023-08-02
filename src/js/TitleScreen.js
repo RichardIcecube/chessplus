@@ -29,7 +29,7 @@ export default function TitleScreen() {
       {selectedMode ? (
         selectedMode
       ) : (
-        <div class="title-screen">
+        <div className="title-screen">
           <h1 id="title">Chess+</h1>
           <button onClick={() => handleModeSelect(1)}>Chess</button>
           <button onClick={() => handleModeSelect(2)}>Zombie Chess</button>
