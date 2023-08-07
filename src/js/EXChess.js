@@ -581,7 +581,6 @@ function EXChess() {
             setGame(next);
             p1stack -= 3;
             setPrevStack(-3);
-            setLastPiece('r');
             toggleEX();
             return true;
           }
@@ -600,7 +599,6 @@ function EXChess() {
             setGame(next);
             p2stack -= 3;
             setPrevStack(-3);
-            setLastPiece('r');
             toggleEX();
             return true;
           }
