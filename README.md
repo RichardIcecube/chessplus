@@ -17,8 +17,8 @@ At the beginning of the game, if for whatever reason, you wanted to castle your 
 ![image](https://github.com/RichardIcecube/chessplus/assets/66053594/94f955a0-33e3-4cd0-bd0a-8ae58f4e6942) <br />
 Clearly, this is not a good move given that you can castle your king for free after you move your pieces out of the way. But, depending on the situation, a sacrifice like this might be exactly what you need to get out of a pinch. <br />
 <br />
-Have you ever seen this move before? 
-![image](https://github.com/RichardIcecube/chessplus/assets/66053594/3c5bf62a-332e-4781-b6a8-f1160a346ed5) <br /> <br />
+Have you ever seen this move before?  <br/>
+![image](https://github.com/RichardIcecube/chessplus/assets/66053594/73c50386-77f4-44ef-b40b-d9f3242d1f5d) <br />
 It prepares for a move known as a fianchetto which primes your opponent's bishop to move into the open space under the advanced pawn giving it a strong sniping outpost aimed right at your rook. This move is tricky to deal with, but in Zombie Chess, you can simply take your own pawn with your bishop to get a clear shot at their rook instead. <br />
 ![image](https://github.com/RichardIcecube/chessplus/assets/66053594/0ddb9c69-3931-4822-9690-d6f7cf68cedb) <br />
 This forces your opponent to either block your bishop with their knight or their pawn to prevent losing material. <br />
